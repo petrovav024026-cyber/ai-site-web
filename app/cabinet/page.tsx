@@ -1,0 +1,1 @@
+export const metadata={title:"Личный кабинет"};export default function Page(){return <div><h1>Личный кабинет</h1><p>Скоро здесь появится кабинет пользователя.</p></div>; }
