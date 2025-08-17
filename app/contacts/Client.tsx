@@ -77,9 +77,11 @@ export default function ContactsClient(){
             <input type="checkbox" required checked={consent} onChange={e=>setConsent(e.target.checked)} className={s.checkbox} />
             <span>
               Я принимаю{" "}
-              <Link href="/privacy_policy_ai_studio.pdf" target="_blank" rel="noopener noreferrer" className={s.link}>
-                Политику обработки персональных данных
-              </Link>
+              <a  href="/privacy_policy_ai_studio.pdf"   target="_blank"   rel="noopener noreferrer"   className={s.link} 
+              >   Политику обработки персональных данных 
+              </a>
+
+
             </span>
           </label>
 
