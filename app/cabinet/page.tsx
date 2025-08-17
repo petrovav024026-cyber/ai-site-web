@@ -1,4 +1,4 @@
-// ./app/cabinet/login/page.tsx
+// app/cabinet/login/page.tsx
 import dynamic from 'next/dynamic'
 import { Metadata } from 'next'
 
