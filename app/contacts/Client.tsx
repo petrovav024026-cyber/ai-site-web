@@ -2,6 +2,7 @@
 "use client";
 import { useMemo, useState } from "react";
 import Link from "next/link";
+import s from "./contacts.module.css";
 
 export default function ContactsClient(){
   const [name, setName] = useState("");
