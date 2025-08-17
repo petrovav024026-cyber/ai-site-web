@@ -1,69 +1,126 @@
+
 "use client";
 import { useMemo, useState } from "react";
+import Link from "next/link";
 
-type Product = "AI KP" | "AI TOK" | "AI DOC";
-const isEmail = (s:string)=> /.+@.+\..+/.test(s);
+type Services = "ai-kp" | "ai-tok" | "ai-doc";
 
-export default function Contacts(){
-  const search = typeof window !== "undefined" ? new URLSearchParams(window.location.search) : null;
-  const productInit = (search?.get("product") as Product) || "AI KP";
-
+export default function ContactsClient(){
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [product, setProduct] = useState<Product>(productInit);
-  const [comment, setComment] = useState("");
-  const [accepted, setAccepted] = useState(false);
-  const canSubmit = useMemo(()=> name.trim().length>1 && isEmail(email) && comment.trim().length>0 && accepted, [name,email,comment,accepted]);
+  const [message, setMessage] = useState("");
+  const [services, setServices] = useState<Services[]>([]);
+  const [consent, setConsent] = useState(false);
 
-  async function submit(e:React.FormEvent){
-    e.preventDefault();
-    if(!canSubmit) return;
-    await fetch("/api/contacts", {
-      method:"POST", headers:{ "Content-Type":"application/json" },
-      body: JSON.stringify({ name, email, product, comment, accepted })
-    });
+  const toggleService = (s: Services) => {
+    setServices(prev => prev.includes(s) ? prev.filter(x=>x!==s) : [...prev, s]);
+  };
+
+  const isValid = useMemo(()=>{
+    const hasAllFields = name.trim().length>1 && /\S+@\S+\.\S+/.test(email) && message.trim().length>2;
+    const hasService = services.length>0;
+    return hasAllFields && hasService && consent;
+  }, [name,email,message,services,consent]);
+
+  function handleSubmit(e: React.FormEvent){
+    if(!isValid){ e.preventDefault(); return; }
+    // Здесь может быть интеграция отправки на backend / webhook
     alert("Заявка отправлена. Спасибо!");
-    setName(""); setEmail(""); setComment(""); setAccepted(false);
   }
 
   return (
-    <div className="container">
-      <h1>Контакты</h1>
-      <p>Оставьте заявку — мы ответим в ближайшее время.</p>
-      <form onSubmit={submit} className="stack" noValidate>
-        <div className="grid-2">
+    <div style={{maxWidth:760, margin:"24px auto", background:"#fff", border:"1px solid #E5E7EB", borderRadius:12, boxShadow:"0 4px 14px rgba(0,0,0,.06)", padding:20}}>
+      <h1 style={{marginBottom:12}}>Контакты</h1>
+
+      <form onSubmit={handleSubmit}>
+        <div style={{display:"grid", gridTemplateColumns:"1fr 1fr", gap:16, marginBottom:12}}>
           <div>
-            <label htmlFor="name">Ваше имя</label>
-            <input id="name" value={name} onChange={e=>setName(e.target.value)} placeholder="Иван"/>
+            <label style={{display:"block", marginBottom:6}}>Имя*</label>
+            <input
+              required
+              value={name}
+              onChange={e=>setName(e.target.value)}
+              placeholder="Ваше имя"
+              style={{width:"100%", border:"1px solid #E5E7EB", borderRadius:12, padding:"10px 12px"}}
+              name="name"
+            />
           </div>
           <div>
-            <label htmlFor="email">Email</label>
-            <input id="email" type="email" value={email} onChange={e=>setEmail(e.target.value)} placeholder="you@company.com"/>
+            <label style={{display:"block", marginBottom:6}}>Email*</label>
+            <input
+              required
+              type="email"
+              value={email}
+              onChange={e=>setEmail(e.target.value)}
+              placeholder="name@company.com"
+              style={{width:"100%", border:"1px solid #E5E7EB", borderRadius:12, padding:"10px 12px"}}
+              name="email"
+            />
           </div>
         </div>
 
-        <div>
-          <label htmlFor="product">Продукт</label>
-          <select id="product" value={product} onChange={e=>setProduct(e.target.value as Product)}>
-            <option>AI KP</option>
-            <option>AI TOK</option>
-            <option>AI DOC</option>
-          </select>
+        <div style={{marginBottom:12}}>
+          <label style={{display:"block", marginBottom:6}}>Комментарий*</label>
+          <textarea
+            required
+            value={message}
+            onChange={e=>setMessage(e.target.value)}
+            placeholder="Коротко опишите запрос"
+            rows={5}
+            style={{width:"100%", border:"1px solid #E5E7EB", borderRadius:12, padding:"10px 12px"}}
+            name="message"
+          />
         </div>
 
-        <div>
-          <label htmlFor="comment">Комментарий</label>
-          <textarea id="comment" value={comment} onChange={e=>setComment(e.target.value)} placeholder="Кратко опишите задачу"/>
+        {/* Выбор услуг */}
+        <div style={{marginBottom:12}}>
+          <p style={{marginBottom:8, color:"#374151", fontWeight:500}}>Выберите интересующие услуги*:</p>
+          <label style={{display:"flex", alignItems:"center", marginBottom:8}}>
+            <input type="checkbox" checked={services.includes("ai-kp")} onChange={()=>toggleService("ai-kp")} className="mr-2" />
+            <span>AI KP — интерактивное КП</span>
+          </label>
+          <label style={{display:"flex", alignItems:"center", marginBottom:8}}>
+            <input type="checkbox" checked={services.includes("ai-tok")} onChange={()=>toggleService("ai-tok")} className="mr-2" />
+            <span>AI TOK — токенизатор внедрения</span>
+          </label>
+          <label style={{display:"flex", alignItems:"center", marginBottom:8}}>
+            <input type="checkbox" checked={services.includes("ai-doc")} onChange={()=>toggleService("ai-doc")} className="mr-2" />
+            <span>AI DOC — интерактивный договор</span>
+          </label>
         </div>
 
-        <label className="consent">
-          <input type="checkbox" checked={accepted} onChange={e=>setAccepted(e.target.checked)}/>
-          <span>Я принимаю Политику обработки персональных данных.</span>
+        {/* Согласие с политикой */}
+        <label style={{display:"flex", alignItems:"center", gap:8, margin:"12px 0"}}>
+          <input type="checkbox" required checked={consent} onChange={e=>setConsent(e.target.checked)} />
+          <span>
+            Я принимаю{" "}
+            <Link href="/privacy_policy_ai_studio.pdf" target="_blank" rel="noopener noreferrer" className="text-[#00AEEF] underline">
+              Политику обработки персональных данных
+            </Link>
+          </span>
         </label>
 
-        <div className="form-actions">
-          <button className="pill" disabled={!canSubmit}>Отправить</button>
+        <div style={{display:"flex", justifyContent:"flex-end", marginTop:8}}>
+          <button
+            type="submit"
+            disabled={!isValid}
+            style={{
+              background:"#00AEEF",
+              color:"#fff",
+              border:"none",
+              borderRadius:12,
+              padding:"10px 18px",
+              boxShadow:"0 2px 6px rgba(0,0,0,.06)",
+              transition:"background-color .2s ease",
+              opacity: isValid ? 1 : 0.6,
+              cursor: isValid ? "pointer" : "not-allowed"
+            }}
+          >
+            Отправить
+          </button>
         </div>
+
+        <p style={{fontSize:12, color:"#6B7280", marginTop:8}}>* — обязательные поля</p>
       </form>
     </div>
   );
