@@ -20,6 +20,23 @@ export default function ContactsPage() {
           Комментарий:
           <textarea name="comment" />
         </label>
+        {/* Блок выбора услуг */}
+        <div className="mb-4">
+          <p className="mb-2 font-medium text-gray-700">Выберите интересующие услуги:</p>
+          <label className="flex items-center mb-2">
+            <input type="checkbox" name="services" value="ai-kp" className="mr-2" />
+            <span>AI KP — интерактивное КП</span>
+          </label>
+          <label className="flex items-center mb-2">
+            <input type="checkbox" name="services" value="ai-tok" className="mr-2" />
+            <span>AI TOK — токенизатор внедрения</span>
+          </label>
+          <label className="flex items-center mb-2">
+            <input type="checkbox" name="services" value="ai-doc" className="mr-2" />
+            <span>AI DOC — интерактивный договор</span>
+          </label>
+        </div>
+
         <label>
           <input type="checkbox" required checked={accepted} onChange={(e) => setAccepted(e.target.checked)} />
           Я принимаю <a
