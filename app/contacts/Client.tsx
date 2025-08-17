@@ -9,6 +9,8 @@ export default function ContactsClient(){
   const [message, setMessage] = useState("");
   const [service, setService] = useState("");
   const [consent, setConsent] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [status, setStatus] = useState<null | "ok" | "error">(null);
 
   const isValid = useMemo(()=>{
     const okName = name.trim().length > 1;
@@ -18,9 +20,25 @@ export default function ContactsClient(){
     return okName && okEmail && okMsg && okService && consent;
   }, [name,email,message,service,consent]);
 
-  function handleSubmit(e: React.FormEvent){
-    if(!isValid){ e.preventDefault(); return; }
-    alert("Заявка отправлена. Спасибо!");
+  async function handleSubmit(e: React.FormEvent){
+    e.preventDefault();
+    if(!isValid) return;
+    setSending(true);
+    setStatus(null);
+    try {
+      const resp = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, message, service })
+      });
+      const json = await resp.json().catch(()=>({}));
+      if (resp.ok && json?.ok) { setStatus("ok"); setName(""); setEmail(""); setMessage(""); setService(""); setConsent(false); }
+      else setStatus("error");
+    } catch {
+      setStatus("error");
+    } finally {
+      setSending(false);
+    }
   }
 
   const wrapper: React.CSSProperties = { maxWidth: 960, margin: "24px auto", padding: 16 };
@@ -58,13 +76,13 @@ export default function ContactsClient(){
             <label style={labelStyle}>Выберите услугу*</label>
             <select required value={service} onChange={e=>setService(e.target.value)} style={inputStyle}>
               <option value="">— выберите —</option>
-              <option value="ai-kp">AI KP — интерактивное КП</option>
-              <option value="ai-tok">AI TOK — токенизатор внедрения</option>
-              <option value="ai-doc">AI DOC — интерактивный договор</option>
+              <option value="AI KP">AI KP — интерактивное КП</option>
+              <option value="AI TOK">AI TOK — токенизатор внедрения</option>
+              <option value="AI DOC">AI DOC — интерактивный договор</option>
             </select>
           </div>
 
-          {/* Согласие с политикой — компактный чекбокс слева */}
+          {/* Согласие */}
           <label style={{display:"flex", alignItems:"center", gap:8, fontSize:14}}>
             <input type="checkbox" required checked={consent} onChange={e=>setConsent(e.target.checked)} style={{width:16, height:16}} />
             <span>
@@ -75,10 +93,10 @@ export default function ContactsClient(){
             </span>
           </label>
 
-          {/* Кнопка отправить — фирменная синяя, справа/слева? по ТЗ — внизу слева */}
+          {/* Submit */}
           <button
             type="submit"
-            disabled={!isValid}
+            disabled={!isValid || sending}
             style={{
               background:"#00AEEF",
               color:"#fff",
@@ -87,12 +105,15 @@ export default function ContactsClient(){
               padding:"10px 18px",
               boxShadow:"0 2px 6px rgba(0,0,0,.06)",
               transition:"background-color .2s ease",
-              opacity: isValid ? 1 : .6,
-              cursor: isValid ? "pointer" : "not-allowed"
+              opacity: (!isValid || sending) ? .6 : 1,
+              cursor: (!isValid || sending) ? "not-allowed" : "pointer"
             }}
           >
-            Отправить
+            {sending ? "Отправка..." : "Отправить"}
           </button>
+
+          {status === "ok" && <p style={{color:"#059669", fontSize:14}}>Отправлено. Мы свяжемся с вами.</p>}
+          {status === "error" && <p style={{color:"#DC2626", fontSize:14}}>Ошибка отправки. Попробуйте позже.</p>}
 
           <p style={{fontSize:12, color:"#6B7280"}}>* — обязательные поля</p>
         </form>
