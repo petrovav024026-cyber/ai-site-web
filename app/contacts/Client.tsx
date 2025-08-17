@@ -42,40 +42,30 @@ export default function ContactsClient(){
     }
   }
 
-  const wrapper: React.CSSProperties = { maxWidth: 960, margin: "24px auto", padding: 16 };
-  const card: React.CSSProperties = { background:"#fff", border:"1px solid #E5E7EB", borderRadius:12, boxShadow:"0 4px 14px rgba(0,0,0,.06)", padding:24 };
-  const fieldHalf: React.CSSProperties = { width: "50%", minWidth: 320 };
-  const inputStyle: React.CSSProperties = { width:"100%", border:"1px solid #E5E7EB", borderRadius:12, padding:"10px 12px" };
-  const labelStyle: React.CSSProperties = { display:"block", marginBottom:6, color:"#374151" };
-
   return (
-    <div style={wrapper}>
-      <div style={card}>
-        <h1 style={{marginBottom:16}}>Контакты</h1>
+    <div className={s.wrap}>
+      <div className={s.card}>
+        <h1 className={s.title}>Контакты</h1>
 
-        <form onSubmit={handleSubmit} style={{display:"flex", flexDirection:"column", gap:14, alignItems:"flex-start"}}>
-          {/* Имя */}
-          <div style={fieldHalf}>
-            <label style={labelStyle}>Имя*</label>
-            <input name="name" required value={name} onChange={e=>setName(e.target.value)} placeholder="Ваше имя" style={inputStyle} />
+        <form onSubmit={handleSubmit} className={s.form}>
+          <div className={s.half}>
+            <label className={s.label}>Имя*</label>
+            <input name="name" required value={name} onChange={e=>setName(e.target.value)} placeholder="Ваше имя" className={s.input} />
           </div>
 
-          {/* Email */}
-          <div style={fieldHalf}>
-            <label style={labelStyle}>Email*</label>
-            <input name="email" required type="email" value={email} onChange={e=>setEmail(e.target.value)} placeholder="name@company.com" style={inputStyle} />
+          <div className={s.half}>
+            <label className={s.label}>Email*</label>
+            <input name="email" required type="email" value={email} onChange={e=>setEmail(e.target.value)} placeholder="name@company.com" className={s.input} />
           </div>
 
-          {/* Комментарий */}
-          <div style={fieldHalf}>
-            <label style={labelStyle}>Комментарий*</label>
-            <textarea name="message" required value={message} onChange={e=>setMessage(e.target.value)} placeholder="Коротко опишите запрос" rows={5} style={inputStyle as any} />
+          <div className={s.half}>
+            <label className={s.label}>Комментарий*</label>
+            <textarea name="message" required value={message} onChange={e=>setMessage(e.target.value)} placeholder="Коротко опишите запрос" rows={5} className={s.input} />
           </div>
 
-          {/* Услуги — выпадающий список */}
-          <div style={fieldHalf}>
-            <label style={labelStyle}>Выберите услугу*</label>
-            <select required value={service} onChange={e=>setService(e.target.value)} style={inputStyle}>
+          <div className={s.half}>
+            <label className={s.label}>Выберите услугу*</label>
+            <select required value={service} onChange={e=>setService(e.target.value)} className={s.input}>
               <option value="">— выберите —</option>
               <option value="AI KP">AI KP — интерактивное КП</option>
               <option value="AI TOK">AI TOK — токенизатор внедрения</option>
@@ -83,40 +73,30 @@ export default function ContactsClient(){
             </select>
           </div>
 
-          {/* Согласие */}
-          <label style={{display:"flex", alignItems:"center", gap:8, fontSize:14}}>
-            <input type="checkbox" required checked={consent} onChange={e=>setConsent(e.target.checked)} style={{width:16, height:16}} />
+          <label className={s.consent}>
+            <input type="checkbox" required checked={consent} onChange={e=>setConsent(e.target.checked)} className={s.checkbox} />
             <span>
               Я принимаю{" "}
-              <Link href="/privacy_policy_ai_studio.pdf" target="_blank" rel="noopener noreferrer" className="text-[#00AEEF] underline">
+              <Link href="/privacy_policy_ai_studio.pdf" target="_blank" rel="noopener noreferrer" className={s.link}>
                 Политику обработки персональных данных
               </Link>
             </span>
           </label>
 
-          {/* Submit */}
-          <button
-            type="submit"
-            disabled={!isValid || sending}
-            style={{
-              background:"#00AEEF",
-              color:"#fff",
-              border:"none",
-              borderRadius:9999,
-              padding:"10px 18px",
-              boxShadow:"0 2px 6px rgba(0,0,0,.06)",
-              transition:"background-color .2s ease",
-              opacity: (!isValid || sending) ? .6 : 1,
-              cursor: (!isValid || sending) ? "not-allowed" : "pointer"
-            }}
-          >
-            {sending ? "Отправка..." : "Отправить"}
-          </button>
+          <div className={s.actions}>
+            <button
+              type="submit"
+              disabled={!isValid || sending}
+              className={s.btn}
+            >
+              {sending ? "Отправка..." : "Отправить"}
+            </button>
+          </div>
 
-          {status === "ok" && <p style={{color:"#059669", fontSize:14}}>Отправлено. Мы свяжемся с вами.</p>}
-          {status === "error" && <p style={{color:"#DC2626", fontSize:14}}>Ошибка отправки. Попробуйте позже.</p>}
+          {status === "ok" && <p className={s.statusOk}>Отправлено. Мы свяжемся с вами.</p>}
+          {status === "error" && <p className={s.statusErr}>Ошибка отправки. Попробуйте позже.</p>}
 
-          <p style={{fontSize:12, color:"#6B7280"}}>* — обязательные поля</p>
+          <p className={s.note}>* — обязательные поля</p>
         </form>
       </div>
     </div>
