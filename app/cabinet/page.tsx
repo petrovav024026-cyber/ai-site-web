@@ -1,1 +1,14 @@
-export const metadata={title:"Личный кабинет"};export default function Page(){return <div><h1>Личный кабинет</h1><p>Скоро здесь появится кабинет пользователя.</p></div>; }
+// ./app/cabinet/login/page.tsx
+import dynamic from 'next/dynamic'
+import { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Вход в кабинет',
+  description: 'Авторизация пользователя',
+}
+
+const LoginClient = dynamic(() => import('./Client'), { ssr: false })
+
+export default function LoginPage() {
+  return <LoginClient />
+}
