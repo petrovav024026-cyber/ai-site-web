@@ -1,9 +1,31 @@
-import type { Metadata } from "next";
-import Client from "./Client";
 
-export const metadata: Metadata = {
-  title: "Контакты",
-  description: "Оставьте заявку — мы ответим в ближайшее время"
-};
+"use client";
 
-export default function Page(){ return <Client />; }
+import { useState } from "react";
+
+export default function ContactsPage() {
+  const [accepted, setAccepted] = useState(false);
+
+  return (
+    <div className="contacts-form">
+      <h1>Контакты</h1>
+      <form>
+        <label>
+          Имя: <input type="text" name="name" required />
+        </label>
+        <label>
+          Email: <input type="email" name="email" required />
+        </label>
+        <label>
+          Комментарий:
+          <textarea name="comment" />
+        </label>
+        <label>
+          <input type="checkbox" required checked={accepted} onChange={(e) => setAccepted(e.target.checked)} />
+          Я принимаю <a href="/privacy_policy_v1.0_ai-studio.pdf" target="_blank" rel="noopener noreferrer">Политику обработки персональных данных</a>
+        </label>
+        <button type="submit" disabled={!accepted}>Отправить</button>
+      </form>
+    </div>
+  );
+}
