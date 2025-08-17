@@ -22,7 +22,15 @@ export default function ContactsPage() {
         </label>
         <label>
           <input type="checkbox" required checked={accepted} onChange={(e) => setAccepted(e.target.checked)} />
-          Я принимаю <a href="/privacy_policy_v1.0_ai-studio.pdf" target="_blank" rel="noopener noreferrer">Политику обработки персональных данных</a>
+          Я принимаю <a
+  href="/privacy_policy_ai_studio.pdf"
+  target="_blank"
+  rel="noopener noreferrer"
+  className="text-[#00AEEF] underline hover:text-[#26A5E4]"
+>
+  Политику обработки персональных данных
+</a>
+
         </label>
         <button type="submit" disabled={!accepted}>Отправить</button>
       </form>
